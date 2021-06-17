@@ -109,6 +109,24 @@ kubectl apply -f cluster-issuer.yaml --namespace $INGRESS_NAMESPACE
 #----------------------------------------------------------------------------------------------------
 
 #----------------------------------------------------------------------------------------------------
+# Hello World
+#
+# Deploy a simple application to test the setup
+
+# Deploy Hello-World-App
+kubectl apply -f aks-helloworld.yaml --namespace $MICROSERVICES_NAMESPACE
+
+# Configure ingress rule
+yq w ingress-rules-template.yaml "metadata.namespace" "$MICROSERVICES_NAMESPACE" | yq w - "spec.tls[0].hosts[0]" "$DNS_RECORD" | yq w - "spec.rules[0].host" "$DNS_RECORD" > ingress-rules.yaml
+kubectl apply -f ingress-rules.yaml --namespace $MICROSERVICES_NAMESPACE
+
+echo "Test application deployed under https://$DNS_RECORD/hello-world"
+echo "Remove test application with 'kubectl delete -f aks-helloworld.yaml'"
+echo "Ingress rules can be configured in ingress-rules.yaml and deployed with 'kubectl apply -f ingress-rules.yaml --namespace=$MICROSERVICES_NAMESPACE'"
+
+#----------------------------------------------------------------------------------------------------
+
+#----------------------------------------------------------------------------------------------------
 # Database Setup
 #
 # Deploy services that provide persistent databases used by other services
@@ -123,7 +141,7 @@ kubectl apply -f cluster-issuer.yaml --namespace $INGRESS_NAMESPACE
 # Create resources for CI/CD pipelines
 
 # Create service principal with rights scoped to the resource group and save the credentials.
-# The credentials can be used for authentication in automatic workflows (e.g. Github actions
+# The credentials can be used for authentication in automatic workflows (e.g. Github actions)
 SP_CREDENTIALS=$(az ad sp create-for-rbac --name http://$SERVICE_PRINCIPAL_NAME --scope $GROUP_ID --role Contributor --sdk-auth)
 echo "Service Principal Credentials. Save these for use in automation (e.g. Github actions)"
 echo "$SP_CREDENTIALS"
