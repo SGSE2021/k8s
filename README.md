@@ -48,13 +48,14 @@ on:
     branches: [ main ]
   pull_request:
     branches: [ main ]
-  workflow_dispatch:
   
 env:
   CONTAINER_REGISTRY: <ACR Login Server (e.g. mycontainerregistry.azurecr.io)>
   CLUSTER_NAME: <AKS Clusters name (e.g. myAKSCluster)>
   RESOURCE_GROUP: <Resource group name (e.g. myResourceGroup)>
+  MS_NAMESPACE: <Namespace for Microservice deployment>
   APP_NAME: <Application name (e.g. myApp)>
+  DEPLOYMENT_NAME: 
   DOCKERFILE: <Path to dockerfile (e.g. ./Dockerfile)>
 
 jobs:
@@ -62,6 +63,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+    
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+     
+    - name: Cache Docker layers
+      uses: actions/cache@v2
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
     
     - name: Login to Azure Container Registry
       uses: Azure/docker-login@v1
@@ -78,9 +90,19 @@ jobs:
           file: ${{ env.DOCKERFILE }}
           push: true
           tags: "${{ env.CONTAINER_REGISTRY }}/${{ env.APP_NAME }}:latest"
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache-new
           
     - name: Image digest
       run: echo ${{ steps.docker_build.outputs.digest }}
+      
+    # Temp fix
+    # https://github.com/docker/build-push-action/issues/252
+    # https://github.com/moby/buildkit/issues/1896
+    - name: Move cache
+      run: |
+        rm -rf /tmp/.buildx-cache
+        mv /tmp/.buildx-cache-new /tmp/.buildx-cache
 
   deploy:
     needs: build
@@ -100,16 +122,29 @@ jobs:
         username: ${{ secrets.ACR_USERNAME }}
         password: ${{ secrets.ACR_PASSWORD }}
 
-    # Set the target AKS cluster.
-    - uses: Azure/aks-set-context@v1
+    - name: Set target AKS cluster
+      uses: Azure/aks-set-context@v1
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
         cluster-name: ${{ env.CLUSTER_NAME }}
         resource-group: ${{ env.RESOURCE_GROUP }}
         
-    - uses: Azure/k8s-deploy@v1
+    - id: file_changes
+      uses: trilom/file-changes-action@v1.2.3
+      with:
+        output: ' '
+        
+    - if: contains(steps.file_changes.outputs.files, <Mainifest file>)
+      name: Deploy to k8s with manifest
+      uses: Azure/k8s-deploy@v1
       with:
         manifests: <YAML files for deployments/services (e.g. manifests/myapp.yaml)>
+        namespace: ${{ MS_NAMESPACE }}
+        
+    - if: !contains(steps.file_changes.outputs.files, <Mainifest file>)
+      name: Deploy to k8s
+      run: |
+        kubectl rollout restart deployment ${{ DEPLOYMENT_NAME }}
 
 ```
 
