@@ -113,7 +113,7 @@ helm repo update
 # Use Helm to deploy an NGINX ingress controller
 helm install nginx-ingress ingress-nginx/ingress-nginx \
     --namespace $INGRESS_NAMESPACE \
-    --set controller.replicaCount=2 \
+    --set controller.replicaCount=1 \
     --set controller.nodeSelector."beta\.kubernetes\.io/os"=linux \
     --set defaultBackend.nodeSelector."beta\.kubernetes\.io/os"=linux \
     --set controller.admissionWebhooks.patch.nodeSelector."beta\.kubernetes\.io/os"=linux \
@@ -152,7 +152,6 @@ kubectl apply -f ingress-rules.yaml --namespace $MICROSERVICES_NAMESPACE
 echo "Test application deployed under https://$DNS_RECORD/hello-world"
 echo "Remove test application with 'kubectl delete -f aks-helloworld.yaml'"
 echo "Ingress rules can be configured in ingress-rules.yaml and deployed with 'kubectl apply -f ingress-rules.yaml --namespace=$MICROSERVICES_NAMESPACE'"
-
 #----------------------------------------------------------------------------------------------------
 
 #----------------------------------------------------------------------------------------------------

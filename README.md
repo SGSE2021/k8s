@@ -48,6 +48,9 @@ on:
     branches: [ main ]
   pull_request:
     branches: [ main ]
+    
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
   
 env:
   CONTAINER_REGISTRY: <ACR Login Server (e.g. mycontainerregistry.azurecr.io)>
@@ -55,7 +58,7 @@ env:
   RESOURCE_GROUP: <Resource group name (e.g. myResourceGroup)>
   MS_NAMESPACE: <Namespace for Microservice deployment>
   APP_NAME: <Application name (e.g. myApp)>
-  DEPLOYMENT_NAME: 
+  DEPLOYMENT_NAME: <Service name (e.g. myApp)>
   DOCKERFILE: <Path to dockerfile (e.g. ./Dockerfile)>
 
 jobs:
@@ -69,7 +72,7 @@ jobs:
      
     - name: Cache Docker layers
       uses: actions/cache@v2
-        with:
+      with:
           path: /tmp/.buildx-cache
           key: ${{ runner.os }}-buildx-${{ github.sha }}
           restore-keys: |
