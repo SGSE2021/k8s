@@ -60,24 +60,13 @@ env:
   IMAGE_NAME: <Image to run in pod (e.g. myApp)>
   DEPLOYMENT_NAME: <Service name (e.g. myApp)>
   DOCKERFILE: <Path to dockerfile (e.g. ./Dockerfile)>
-  MANIFESTFILE: <Path to deployment manifest (e.g. ./manifests/myapp.yaml)>
+  MANIFESTFILE: <Path to deployment manifest (e.g. manifests/myapp.yaml)>
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v1
-     
-    - name: Cache Docker layers
-      uses: actions/cache@v2
-      with:
-          path: /tmp/.buildx-cache
-          key: ${{ runner.os }}-buildx-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-buildx-
     
     - name: Login to Azure Container Registry
       uses: Azure/docker-login@v1
@@ -94,19 +83,11 @@ jobs:
           file: ${{ env.DOCKERFILE }}
           push: true
           tags: "${{ env.CONTAINER_REGISTRY }}/${{ env.IMAGE_NAME }}:latest"
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache-new
+          cache-from: type=registry,ref=${{ env.CONTAINER_REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          cache-to: type=inline
           
     - name: Image digest
       run: echo ${{ steps.docker_build.outputs.digest }}
-      
-    # Temp fix
-    # https://github.com/docker/build-push-action/issues/252
-    # https://github.com/moby/buildkit/issues/1896
-    - name: Move cache
-      run: |
-        rm -rf /tmp/.buildx-cache
-        mv /tmp/.buildx-cache-new /tmp/.buildx-cache
 
   deploy:
     needs: build
@@ -138,17 +119,17 @@ jobs:
       with:
         output: ' '
         
-    - if: contains(steps.file_changes.outputs.files, ${{ env.MANIFESTFILE }})
+    - if: contains(steps.file_changes.outputs.files, env.MANIFESTFILE)
       name: Deploy to k8s with manifest
       uses: Azure/k8s-deploy@v1
       with:
         manifests: ${{ env.MANIFESTFILE }}
         namespace: ${{ env.MS_NAMESPACE }}
         
-    - if: ! contains(steps.file_changes.outputs.files, ${{ env.MANIFESTFILE }})
+    - if: "!contains(steps.file_changes.outputs.files, env.MANIFESTFILE)"
       name: Deploy to k8s
       run: |
-        kubectl rollout restart deployment ${{ env.DEPLOYMENT_NAME }}
+        kubectl rollout restart deployment ${{ env.DEPLOYMENT_NAME }} --namespace ${{ env.MS_NAMESPACE }}
 
 ```
 
