@@ -76,7 +76,7 @@ echo "AKS Name: $AKS_NAME"
 echo "AKS Node Resource Group: $NODE_RESOURCE_GROUP"
 
 # Connect to cluster using kubectl
-az aks get-credentials --resource-group $RESOURCE_GROUP_NAME --name $AKS_NAME
+az aks get-credentials --resource-group $RESOURCE_GROUP_NAME --name $AKS_NAME --overwrite-existing
 
 # Enable monitoring
 az aks enable-addons -a monitoring -n $AKS_NAME -g $RESOURCE_GROUP_NAME
@@ -160,28 +160,28 @@ echo "Ingress rules can be configured in ingress-rules.yaml and deployed with 'k
 # Deploy services that provide persistent databases used by other services
 
 # Add bitnami-azure Helm repo
-helm repo add bitnami-azure https://marketplace.azurecr.io/helm/v1/repo
+#helm repo add bitnami-azure https://marketplace.azurecr.io/helm/v1/repo
 
 # Update your local Helm chart repository cache
-helm repo update
+#helm repo update
 
 # Generate random passwords and username
-MONGO_ROOT_PWD=$(tr -cd '[:alnum:]' < /dev/urandom | fold -w10 | head -n 1)
-MONGO_PWD=$(tr -cd '[:alnum:]' < /dev/urandom | fold -w10 | head -n 1)
-MONGO_USERNAME=$(tr -cd '[:alnum:]' < /dev/urandom | fold -w10 | head -n 1)
+#MONGO_ROOT_PWD=$(tr -cd '[:alnum:]' < /dev/urandom | fold -w10 | head -n 1)
+#MONGO_PWD=$(tr -cd '[:alnum:]' < /dev/urandom | fold -w10 | head -n 1)
+#MONGO_USERNAME=$(tr -cd '[:alnum:]' < /dev/urandom | fold -w10 | head -n 1)
 
 # Install MongoDB Helm chart
-helm install $MONGO_HOSTNAME bitnami-azure/mongodb \
-				--namespace $DATABASE_NAMESPACE \
-				--set mongodbRootPassword=$MONGO_ROOT_PWD \
-				--set mongodbUsername=$MONGO_USERNAME \
-				--set mongodbPassword=$MONGO_PWD \
-				--set mongodbDatabase=$MONGO_DBNAME \
-				--set service.port=$MONGO_PORT \
-				--set replicaSet.enabled=true \
-				--set persistence.size=$MONGO_SIZE
+#helm install $MONGO_HOSTNAME bitnami-azure/mongodb \
+#				--namespace $DATABASE_NAMESPACE \
+#				--set mongodbRootPassword=$MONGO_ROOT_PWD \
+#				--set mongodbUsername=$MONGO_USERNAME \
+#				--set mongodbPassword=$MONGO_PWD \
+#				--set mongodbDatabase=$MONGO_DBNAME \
+#				--set service.port=$MONGO_PORT \
+#				--set replicaSet.enabled=true \
+#				--set persistence.size=$MONGO_SIZE
 
-echo "MongoDB URL: mongodb://$MONGO_USERNAME:$MONGO_PWD@$MONGO_HOSTNAME.$DATABASE_NAMESPACE:$MONGO_PORT/$MONGO_DBNAME"
+#echo "MongoDB URL: mongodb://$MONGO_USERNAME:$MONGO_PWD@$MONGO_HOSTNAME.$DATABASE_NAMESPACE:$MONGO_PORT/$MONGO_DBNAME"
 
 #----------------------------------------------------------------------------------------------------
 

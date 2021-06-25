@@ -57,9 +57,10 @@ env:
   CLUSTER_NAME: <AKS Clusters name (e.g. myAKSCluster)>
   RESOURCE_GROUP: <Resource group name (e.g. myResourceGroup)>
   MS_NAMESPACE: <Namespace for Microservice deployment>
-  APP_NAME: <Application name (e.g. myApp)>
+  IMAGE_NAME: <Image to run in pod (e.g. myApp)>
   DEPLOYMENT_NAME: <Service name (e.g. myApp)>
   DOCKERFILE: <Path to dockerfile (e.g. ./Dockerfile)>
+  MANIFESTFILE: <Path to deployment manifest (e.g. ./manifests/myapp.yaml)>
 
 jobs:
   build:
@@ -92,7 +93,7 @@ jobs:
           context: ./
           file: ${{ env.DOCKERFILE }}
           push: true
-          tags: "${{ env.CONTAINER_REGISTRY }}/${{ env.APP_NAME }}:latest"
+          tags: "${{ env.CONTAINER_REGISTRY }}/${{ env.IMAGE_NAME }}:latest"
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new
           
@@ -137,17 +138,17 @@ jobs:
       with:
         output: ' '
         
-    - if: contains(steps.file_changes.outputs.files, <Mainifest file>)
+    - if: contains(steps.file_changes.outputs.files, ${{ env.MANIFESTFILE }})
       name: Deploy to k8s with manifest
       uses: Azure/k8s-deploy@v1
       with:
-        manifests: <YAML files for deployments/services (e.g. manifests/myapp.yaml)>
-        namespace: ${{ MS_NAMESPACE }}
+        manifests: ${{ env.MANIFESTFILE }}
+        namespace: ${{ env.MS_NAMESPACE }}
         
-    - if: !contains(steps.file_changes.outputs.files, <Mainifest file>)
+    - if: ! contains(steps.file_changes.outputs.files, ${{ env.MANIFESTFILE }})
       name: Deploy to k8s
       run: |
-        kubectl rollout restart deployment ${{ DEPLOYMENT_NAME }}
+        kubectl rollout restart deployment ${{ env.DEPLOYMENT_NAME }}
 
 ```
 
