@@ -58,7 +58,7 @@ env:
   RESOURCE_GROUP: <Resource group name (e.g. myResourceGroup)>
   MS_NAMESPACE: <Namespace for Microservice deployment>
   IMAGE_NAME: <Image to run in pod (e.g. myApp)>
-  DEPLOYMENT_NAME: <Service name (e.g. myApp)>
+  SERVICE_NAME: <Service name (e.g. myApp)>
   DOCKERFILE: <Path to dockerfile (e.g. ./Dockerfile)>
   MANIFESTFILE: <Path to deployment manifest (e.g. manifests/myapp.yaml)>
 
@@ -114,22 +114,23 @@ jobs:
         cluster-name: ${{ env.CLUSTER_NAME }}
         resource-group: ${{ env.RESOURCE_GROUP }}
         
-    - id: file_changes
+    - if: github.event_name != 'workflow_dispatch'
+      id: file_changes
       uses: trilom/file-changes-action@v1.2.3
       with:
         output: ' '
         
-    - if: contains(steps.file_changes.outputs.files, env.MANIFESTFILE)
+    - if: github.event_name != 'workflow_dispatch' && contains(steps.file_changes.outputs.files, env.MANIFESTFILE)
       name: Deploy to k8s with manifest
       uses: Azure/k8s-deploy@v1
       with:
         manifests: ${{ env.MANIFESTFILE }}
         namespace: ${{ env.MS_NAMESPACE }}
         
-    - if: "!contains(steps.file_changes.outputs.files, env.MANIFESTFILE)"
+    - if: github.event_name == 'workflow_dispatch' || "!contains(steps.file_changes.outputs.files, env.MANIFESTFILE)"
       name: Deploy to k8s
       run: |
-        kubectl rollout restart deployment ${{ env.DEPLOYMENT_NAME }} --namespace ${{ env.MS_NAMESPACE }}
+        kubectl rollout restart deployment ${{ env.SERVICE_NAME }} --namespace ${{ env.MS_NAMESPACE }}
 
 ```
 
