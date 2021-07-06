@@ -246,7 +246,7 @@ helm install $RABBIT_NAME bitnami-azure/rabbitmq \
 		--namespace $SUPPORT_NAMESPACE \
 		--set persistence.size=$RABBIT_SIZE
 
-RABBIT_PW=$(kubectl get secret --namespace support rabbitmq -o jsonpath="{.data.rabbitmq-password}" | base64 --decode)"
+RABBIT_PW=$(kubectl get secret --namespace support rabbitmq -o jsonpath="{.data.rabbitmq-password}" | base64 --decode)
 
 echo "RabbitMQ:"
 echo "URL: amqp://user:$RABBIT_PW@rabbitmq.support.svc.cluster.local:5672"
