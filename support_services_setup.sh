@@ -114,7 +114,7 @@ helm repo update
 #----------------------------------------------------------------------------------------------------
 # Create a namespace
 
-#kubectl create namespace $SUPPORT_NAMESPACE
+kubectl create namespace $SUPPORT_NAMESPACE
 #----------------------------------------------------------------------------------------------------
 
 #----------------------------------------------------------------------------------------------------
@@ -146,7 +146,7 @@ helm install $EXAMSDB_HOSTNAME bitnami-azure/mysql \
 		--set auth.username=$EXAMSDB_USERNAME \
 		--set auth.password=$EXAMSDB_PW \
 		--set auth.database=$EXAMSDB_DBNAME \
-		--set primary.service.port= $EXAMSDB_PORT \
+		--set primary.service.port=$EXAMSDB_PORT \
 		--set primary.persistence.size=$EXAMSDB_SIZE
 		
 echo "Exams database:"
@@ -161,14 +161,14 @@ echo ""
 #----------------------------------------------------------------------------------------------------
 # Setup courses database (MariaDB)
 
-helm install $COURSESDB_HOSTNAME azure-marketplace/mariadb \
+helm install $COURSESDB_HOSTNAME bitnami-azure/mariadb \
 		--namespace $SUPPORT_NAMESPACE \
 		--set architecture=standalone \
 		--set auth.rootPassword=$COURSESDB_ROOT_PW \
 		--set auth.username=$COURSESDB_USERNAME \
 		--set auth.password=$COURSESDB_PW \
-		--set auth.database=$COURSESDB_DBNAME
-		--set primary.service.port= $COURSESDB_PORT \
+		--set auth.database=$COURSESDB_DBNAME \
+		--set primary.service.port=$COURSESDB_PORT \
 		--set primary.persistence.size=$COURSESDB_SIZE
 
 echo "Courses database:"
@@ -184,6 +184,7 @@ echo ""
 # Setup users database (PostgreSQL)
 
 helm install $USERSDB_HOSTNAME bitnami-azure/postgresql \
+		--namespace $SUPPORT_NAMESPACE \
 		--set postgresqlPostgresPassword=$USERSDB_ROOT_PW \
 		--set postgresqlUsername=$USERSDB_USERNAME \
 		--set postgresqlPassword=$USERSDB_PW \
@@ -197,6 +198,7 @@ echo "PW: $USERSDB_PW"
 echo "Admin PW: $USERSDB_ROOT_PW"
 echo "Database: $USERSDB_DBNAME"
 echo "Port: $USERSDB_PORT"
+echo "URL: postgresql://$USERSDB_USERNAME:$USERSDB_PW@$USERSDB_HOSTNAME-postgresql.$SUPPORT_NAMESPACE.svc.cluster.local:$USERSDB_PORT/$USERSDB_DBNAME"
 echo ""
 #----------------------------------------------------------------------------------------------------
 
