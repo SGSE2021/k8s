@@ -26,21 +26,6 @@ INGRESS_NAMESPACE=ingress
 # IP_DNS_LABEL: DNS label used by ingress
 IP_DNS_LABEL=sgse2021
 
-# DATABASE_NAMESPACE: Namespace for database services
-DATABASE_NAMESPACE=databases
-
-# MONGO_HOSTNAME: Hostname for MongoDB
-MONGO_HOSTNAME=mongohost
-
-# MONGO_DBNAME: MongoDB database name
-MONGO_DBNAME=mongodb
-
-# MONGO_PORT: MongoDB service port
-MONGO_PORT=27017
-
-# MONGO_SIZE: Size of the storage volume for MongoDB
-MONGO_SIZE=1Gi
-
 # SERVICE_PRINCIPAL_NAME: Must be unique within your AD tenant
 SERVICE_PRINCIPAL_NAME=sgse2021ServicePrincipal
 
@@ -152,37 +137,6 @@ kubectl apply -f ingress-rules.yaml --namespace $MICROSERVICES_NAMESPACE
 echo "Test application deployed under https://$DNS_RECORD/hello-world"
 echo "Remove test application with 'kubectl delete -f aks-helloworld.yaml'"
 echo "Ingress rules can be configured in ingress-rules.yaml and deployed with 'kubectl apply -f ingress-rules.yaml --namespace=$MICROSERVICES_NAMESPACE'"
-#----------------------------------------------------------------------------------------------------
-
-#----------------------------------------------------------------------------------------------------
-# Database Setup (WIP)
-#
-# Deploy services that provide persistent databases used by other services
-
-# Add bitnami-azure Helm repo
-#helm repo add bitnami-azure https://marketplace.azurecr.io/helm/v1/repo
-
-# Update your local Helm chart repository cache
-#helm repo update
-
-# Generate random passwords and username
-#MONGO_ROOT_PWD=$(tr -cd '[:alnum:]' < /dev/urandom | fold -w10 | head -n 1)
-#MONGO_PWD=$(tr -cd '[:alnum:]' < /dev/urandom | fold -w10 | head -n 1)
-#MONGO_USERNAME=$(tr -cd '[:alnum:]' < /dev/urandom | fold -w10 | head -n 1)
-
-# Install MongoDB Helm chart
-#helm install $MONGO_HOSTNAME bitnami-azure/mongodb \
-#				--namespace $DATABASE_NAMESPACE \
-#				--set mongodbRootPassword=$MONGO_ROOT_PWD \
-#				--set mongodbUsername=$MONGO_USERNAME \
-#				--set mongodbPassword=$MONGO_PWD \
-#				--set mongodbDatabase=$MONGO_DBNAME \
-#				--set service.port=$MONGO_PORT \
-#				--set replicaSet.enabled=true \
-#				--set persistence.size=$MONGO_SIZE
-
-#echo "MongoDB URL: mongodb://$MONGO_USERNAME:$MONGO_PWD@$MONGO_HOSTNAME.$DATABASE_NAMESPACE:$MONGO_PORT/$MONGO_DBNAME"
-
 #----------------------------------------------------------------------------------------------------
 
 #----------------------------------------------------------------------------------------------------
