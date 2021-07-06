@@ -216,8 +216,12 @@ helm install $MESSAGEDB_HOSTNAME bitnami-azure/mongodb \
 		--set persistence.size=$MESSAGEDB_SIZE
 
 echo "Messages database:"
-echo "URL: mongodb://$MESSAGEDB_USERNAME:$MESSAGEDB_PW@$MESSAGEDB_HOSTNAME-mongodb.$SUPPORT_NAMESPACE.svc.cluster.local:$MESSAGEDB_PORT/$MESSAGEDB_DBNAME"
+echo "User: $MESSAGEDB_USERNAME"
+echo "PW: $MESSAGEDB_PW"
 echo "Root PW: $MESSAGEDB_ROOT_PW"
+echo "Database: $MESSAGEDB_DBNAME"
+echo "Port: $MESSAGEDB_PORT"
+echo "URL: mongodb://$MESSAGEDB_USERNAME:$MESSAGEDB_PW@$MESSAGEDB_HOSTNAME-mongodb.$SUPPORT_NAMESPACE.svc.cluster.local:$MESSAGEDB_PORT/$MESSAGEDB_DBNAME"
 echo ""
 #----------------------------------------------------------------------------------------------------
 
@@ -235,8 +239,12 @@ helm install $RESOURCESDB_HOSTNAME bitnami-azure/mongodb \
 		--set persistence.size=$RESOURCESDB_SIZE
 
 echo "Messages database:"
-echo "URL: mongodb://$RESOURCESDB_USERNAME:$RESOURCESDB_PW@$RESOURCESDB_HOSTNAME-mongodb.$SUPPORT_NAMESPACE.svc.cluster.local:$RESOURCESDB_PORT/$RESOURCESDB_DBNAME"
+echo "User: $RESOURCESDB_USERNAME"
+echo "PW: $RESOURCESDB_PW"
 echo "Root PW: $RESOURCESDB_ROOT_PW"
+echo "Database: $RESOURCESDB_DBNAME"
+echo "Port: $RESOURCESDB_PORT"
+echo "URL: mongodb://$RESOURCESDB_USERNAME:$RESOURCESDB_PW@$RESOURCESDB_HOSTNAME-mongodb.$SUPPORT_NAMESPACE.svc.cluster.local:$RESOURCESDB_PORT/$RESOURCESDB_DBNAME"
 echo ""
 
 #----------------------------------------------------------------------------------------------------
@@ -251,6 +259,6 @@ helm install $RABBIT_NAME bitnami-azure/rabbitmq \
 RABBIT_PW=$(kubectl get secret --namespace support rabbitmq -o jsonpath="{.data.rabbitmq-password}" | base64 --decode)
 
 echo "RabbitMQ:"
-echo "URL: amqp://user:$RABBIT_PW@rabbitmq.support.svc.cluster.local:5672"
+echo "URL: amqp://user:$RABBIT_PW@rabbitmq.$SUPPORT_NAMESPACE.svc.cluster.local:5672"
 echo ""
 #----------------------------------------------------------------------------------------------------
