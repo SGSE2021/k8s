@@ -65,7 +65,7 @@ MESSAGEDB_SIZE=$DB_SIZE
 COURSESDB_ROOT_PW=$(tr -cd '[:alnum:]' < /dev/urandom | fold -w10 | head -n 1)
 COURSESDB_PW=$(tr -cd '[:alnum:]' < /dev/urandom | fold -w10 | head -n 1)
 COURSESDB_USERNAME=coursesdb-user
-COURSESDB_HOSTNAME=courses
+COURSESDB_HOSTNAME=course
 COURSESDB_DBNAME=coursedb
 COURSESDB_PORT=$MARIA_PORT
 COURSESDB_SIZE=$DB_SIZE
@@ -169,7 +169,8 @@ helm install $COURSESDB_HOSTNAME bitnami-azure/mariadb \
 		--set auth.password=$COURSESDB_PW \
 		--set auth.database=$COURSESDB_DBNAME \
 		--set primary.service.port=$COURSESDB_PORT \
-		--set primary.persistence.size=$COURSESDB_SIZE
+		--set primary.persistence.size=$COURSESDB_SIZE \
+		--set volumePermissions.enabled=true
 
 echo "Courses database:"
 echo "User: $COURSESDB_USERNAME"

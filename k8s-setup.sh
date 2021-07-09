@@ -3,13 +3,13 @@
 ### Configuration options for resources. Modify for your environment.
 
 # RESOURCE_GROUP_NAME: The name of your Resource Group
-RESOURCE_GROUP_NAME=sgse2021ResourceGroup
+RESOURCE_GROUP_NAME=sgse2021RG
 
 # ACR_NAME: The name of your Azure Container Registry. Must be unique within Azure
-ACR_NAME=sgse2021ContainerRegistry
+ACR_NAME=sgse2021CR
 
 # AKS_NAME: The name of your Azure Kubernetes Cluster
-AKS_NAME=sgse2021AKSCluster
+AKS_NAME=sgse2021AKS
 
 # AKS_NODE_COUNT: Number of nodes in your cluster
 AKS_NODE_COUNT=2
@@ -24,10 +24,10 @@ PUBLIC_IP_NAME=sgse2021PublicIP
 INGRESS_NAMESPACE=ingress
 
 # IP_DNS_LABEL: DNS label used by ingress
-IP_DNS_LABEL=sgse2021
+IP_DNS_LABEL=sgse2021-ilias
 
 # SERVICE_PRINCIPAL_NAME: Must be unique within your AD tenant
-SERVICE_PRINCIPAL_NAME=sgse2021ServicePrincipal
+SERVICE_PRINCIPAL_NAME=sgse2021SP
 
 ### End configuration
 
