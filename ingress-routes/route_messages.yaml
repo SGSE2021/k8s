@@ -1,0 +1,80 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: nachrichten
+  namespace: microservices
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: letsencrypt-staging
+    nginx.ingress.kubernetes.io/rewrite-target: $1$2
+    nginx.ingress.kubernetes.io/use-regex: "true"
+spec:
+  tls:
+    - hosts:
+        - sgse2021-ilias.westeurope.cloudapp.azure.com
+      secretName: tls-secret
+  rules:
+    - host: sgse2021-ilias.westeurope.cloudapp.azure.com
+      http:
+        paths:
+          - path: /messages(/|$)(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: nachrichten
+                port:
+                  number: 3000
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: nachrichten-api
+  namespace: microservices
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: letsencrypt-staging
+    nginx.ingress.kubernetes.io/rewrite-target: $1$2
+    nginx.ingress.kubernetes.io/use-regex: "true"
+spec:
+  tls:
+    - hosts:
+        - sgse2021-ilias.westeurope.cloudapp.azure.com
+      secretName: tls-secret
+  rules:
+    - host: sgse2021-ilias.westeurope.cloudapp.azure.com
+      http:
+        paths:
+          - path: /messages-api(/|$)(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: nachrichten-backend
+                port:
+                  number: 8080
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: test-static
+  namespace: microservices
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/rewrite-target: /static/$2
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    cert-manager.io/cluster-issuer: letsencrypt
+spec:
+  tls:
+    - hosts:
+        - sgse2021-ilias.westeurope.cloudapp.azure.com
+      secretName: tls-secret
+  rules:
+    - host: sgse2021-ilias.westeurope.cloudapp.azure.com
+      http:
+        paths:
+          - path: /static(/|$)(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: nachrichten
+                port: 
+                  number: 3000
