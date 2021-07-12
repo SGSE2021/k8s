@@ -1,7 +1,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: nachrichten-frontend
+  name: kurse-termine-frontend
   namespace: microservices
   annotations:
     kubernetes.io/ingress.class: nginx
@@ -17,18 +17,18 @@ spec:
     - host: sgse2021-ilias.westeurope.cloudapp.azure.com
       http:
         paths:
-          - path: /messages(/|$)(.*)
+          - path: /courses(/|$)(.*)
             pathType: Prefix
             backend:
               service:
-                name: nachrichten
+                name: courses-appointments-frontend
                 port:
                   number: 80
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: nachrichten-api
+  name: kurse-termine-api
   namespace: microservices
   annotations:
     kubernetes.io/ingress.class: nginx
@@ -44,10 +44,10 @@ spec:
     - host: sgse2021-ilias.westeurope.cloudapp.azure.com
       http:
         paths:
-          - path: /messages-api(/|$)(.*)
+          - path: /courses-api(/|$)(.*)
             pathType: Prefix
             backend:
               service:
-                name: nachrichten-backend
+                name: courses-appointments
                 port:
                   number: 8080
