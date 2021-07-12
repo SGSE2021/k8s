@@ -132,7 +132,7 @@ echo "Bookings database:"
 echo "URL: neo4j://$BOOKINGSDB_HOSTNAME-neo4j.$SUPPORT_NAMESPACE.svc.cluster.local"
 echo "PW: $BOOKINGSDB_PW"
 echo "User: neo4j"
-echo "Ports: 7474 (HTTP), 7473 (HTTPS), 7687 (Bort)"
+echo "Ports: 7474 (HTTP), 7473 (HTTPS), 7687 (Bolt)"
 echo ""
 #----------------------------------------------------------------------------------------------------
 
